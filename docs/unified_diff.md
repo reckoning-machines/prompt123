@@ -33,3 +33,9 @@ proposed text, and nothing hidden in between.
 
 This file documents the convention only. Diff generation is not
 implemented in the initial scaffold.
+
+## Change Log
+
+- 2026-05-17: First standalone repository contract audit recorded at
+  docs/audits/standalone_repo_contract_audit.md. Verdict: PASS WITH
+  WARNINGS. Added docs/audits/ and docs/plans/.
