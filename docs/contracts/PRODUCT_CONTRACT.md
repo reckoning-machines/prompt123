@@ -69,7 +69,12 @@ These rules are binding.
   new version is a new artifact. Prior artifacts remain intact and
   referenceable.
 - Prompt hashing and versioning must be deterministic. The same prompt
-  content must always produce the same hash and version identity.
+  content must always produce the same content hash. Version identity is
+  distinct from the content hash: it incorporates versioning and approval
+  context, so identical content can still belong to more than one
+  artifact. A new approval or version produces a distinct artifact even
+  when its content hash is unchanged. Both the content hash and the
+  version identity must be computed deterministically.
 - Prompt proofing must be explainable. Every transformation from intent
   to draft must carry a human-readable account of what changed and why.
 

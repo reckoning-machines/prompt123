@@ -6,6 +6,7 @@ dataclasses construct. They contain no execution logic.
 
 from prompt123 import __version__
 from prompt123.approval import ApprovedPrompt
+from prompt123.audit import Audit
 from prompt123.draft import PromptDraft
 from prompt123.execution_artifact import ExecutionArtifact
 from prompt123.hashing import prompt_hash
@@ -34,7 +35,14 @@ def test_ontology_dataclasses_construct():
         approved_prompt_hash=prompt_hash(approved.text),
         artifact_hash=prompt_hash(approved.text),
     )
+    audit = Audit(
+        intent_hash=draft.source_intent_hash,
+        draft_hash=approved.source_draft_hash,
+        approved_prompt_hash=artifact.approved_prompt_hash,
+        execution_artifact_hash=artifact.artifact_hash,
+    )
     assert artifact.text == intent.text or artifact.text == draft.text
+    assert audit.intent_hash == prompt_hash(intent.text)
 
 
 def test_prompt_hash_is_deterministic():

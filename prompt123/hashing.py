@@ -1,8 +1,10 @@
 """Deterministic prompt hashing.
 
-The product contract requires that prompt hashing and versioning be
-deterministic: the same prompt content must always produce the same hash
-and version identity.
+The product contract requires that prompt hashing be deterministic: the
+same prompt content must always produce the same content hash. Version
+identity is a separate concept that also incorporates versioning and
+approval context, so identical content can still belong to distinct
+artifacts. This module covers the content hash only.
 
 This module provides a single small, deterministic helper. It is
 intentionally minimal and has no further implementation.
@@ -14,10 +16,11 @@ import hashlib
 
 
 def prompt_hash(text: str) -> str:
-    """Return a deterministic hex hash of prompt text.
+    """Return a deterministic content hash of prompt text.
 
-    The same input text always yields the same hash. This function is the
-    canonical hashing primitive for the ontology stages.
+    The same input text always yields the same hash. This is a content
+    hash only; it does not encode versioning or approval context, and so
+    it is not a version identity on its own.
 
     Args:
         text: The prompt text to hash.
