@@ -25,6 +25,33 @@ prompt123 is NOT:
 
 prompt123 produces artifacts. It does not run them.
 
+## Purpose: Determinism Without Erasing Intent
+
+prompt123 exists to make LLM prompts as deterministic as possible
+without erasing user intent.
+
+Users may express vague, incomplete, or informal intent. prompt123
+transforms that intent into a reviewable governed PromptDraft by
+identifying ambiguity, missing schema, hidden assumptions,
+nondeterministic wording, and unsafe external dependencies.
+
+The goal is not to make prompts more clever. The goal is to make
+prompts more deterministic, explainable, reviewable, and replay-safe.
+
+Doctrine:
+
+- User intent may be vague.
+- PromptDrafts must make ambiguity explicit.
+- prompt123 may propose clarifications or normalized draft language.
+- prompt123 must preserve the original intent unchanged.
+- prompt123 must never silently decide what the user meant.
+- If intent remains ambiguous, the draft carries findings rather than
+  inventing certainty.
+- LLM-assisted proofing may help detect ambiguity or propose normalized
+  language, but it remains advisory.
+- Approval remains explicit and downstream.
+- Execution remains downstream.
+
 ## Canonical Ontology
 
 prompt123 recognizes a single canonical chain. Every concept in the
@@ -89,6 +116,54 @@ This section documents direction only. None of it is implemented here.
   `PromptIntent` capture.
 - prompt123 itself does not execute prompts, and this contract does not
   authorize it to.
+
+## Future LLM-Assisted Proofing
+
+This section documents direction only. None of it is implemented here.
+
+prompt123 may eventually use an LLM to assist proofing. The following
+doctrine governs that possibility in advance.
+
+- LLM-assisted proofing may propose findings, structural normalization,
+  or candidate draft language.
+- LLM-assisted proofing is advisory only. It produces proposals, never
+  decisions.
+- PromptDraft artifacts remain reviewable regardless of how their
+  findings were produced.
+- Silent rewriting is forbidden. An LLM proposal never replaces the
+  original intent text without a recorded, reviewable finding.
+- Proofing suggestions must be explainable and attributable. Every
+  suggestion records what it proposes, why, and that an LLM produced it.
+- ApprovedPrompt artifacts still require explicit approval by downstream
+  systems. LLM-assisted proofing does not approve anything.
+- prompt123 does not gain execution authority by using LLM-assisted
+  proofing.
+
+LLM-assisted proofing is allowed only to improve determinism and
+explainability. It may propose findings, clarification questions, or
+normalized draft language, but it must not silently resolve ambiguity,
+invent missing constraints, approve prompts, execute prompts, or replace
+deterministic proofing rules.
+
+Clarifications:
+
+- LLM-assisted proofing is a future, optional subsystem.
+- Deterministic, rule-based proofing remains fully valid on its own and
+  requires no LLM.
+- Any future LLM contribution must itself become replayable governance
+  evidence.
+
+A future LLM-assisted proofing pass must persist replay metadata,
+including at least:
+
+- model, provider, and model version
+- a snapshot of the proofing prompt used
+- a config hash for the proofing run
+- the semantic contract version
+- the proofing rule version
+
+Replay reads this persisted metadata. It never re-queries a current
+model.
 
 ## Scope Boundaries
 

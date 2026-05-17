@@ -18,6 +18,30 @@ an explainable `PromptDraft`. The layer inspects raw analyst intent,
 records structured findings, and produces a draft artifact that a human
 or system can review. It never decides; it only describes.
 
+prompt123 exists to make LLM prompts as deterministic as possible
+without erasing user intent. Users may express vague, incomplete, or
+informal intent; the proofing layer transforms that intent into a
+reviewable governed PromptDraft by identifying ambiguity, missing
+schema, hidden assumptions, nondeterministic wording, and unsafe
+external dependencies. The goal is not cleverness; it is determinism,
+explainability, reviewability, and replay safety.
+
+Doctrine for this layer:
+
+- User intent may be vague.
+- PromptDrafts must make ambiguity explicit.
+- prompt123 may propose clarifications or normalized draft language.
+- prompt123 must preserve the original intent unchanged.
+- prompt123 must never silently decide what the user meant.
+- If intent remains ambiguous, the draft carries findings rather than
+  inventing certainty.
+- Approval remains explicit and downstream; execution remains
+  downstream.
+
+Success criterion: a PromptDraft is successful when it makes the user's
+intent more deterministic and reviewable while preserving the original
+intent and explicitly surfacing unresolved ambiguity.
+
 The intended flow this plan works toward:
 
 ```
@@ -121,6 +145,12 @@ Initial categories:
 - mutable_reference: unsafe references to mutable or undated sources.
 - nondeterministic_wording: wording that invites nondeterministic
   output.
+- vague_intent: user intent is underspecified or informal in a way that
+  affects deterministic execution.
+- missing_constraints: prompt lacks required bounds, definitions,
+  assumptions, or stopping conditions.
+- ambiguous_metric: prompt asks for a metric or judgment without
+  defining the calculation or output basis.
 
 Each rule has a stable rule_id and belongs to a versioned rule set
 (proofing_rule_version). Adding or changing rules bumps that version.
@@ -388,7 +418,61 @@ Test requirements:
 - assert it references an ApprovedPrompt identity.
 - assert no execution entry point exists in the package.
 
-## 14. Phase Gates
+### Phase 8: LLM-Assisted Proofing (optional, future)
+
+Deliverable: an optional LLM-assisted proofing layer that proposes
+findings and normalization suggestions. It is additive to, never a
+replacement for, the deterministic rule engine. This phase is governed
+by the Future LLM-Assisted Proofing section of the product contract and
+may not begin until Phases 1 to 7 have passed their audits.
+
+Acceptance criteria:
+
+- all LLM outputs are persisted as replayable artifacts.
+- all generated findings are attributable to the LLM that produced them.
+- no generated text mutates original_text.
+- no approval authority exists in the LLM layer.
+- LLM-generated normalization suggestions are record-only until
+  explicitly reviewed.
+
+Test requirements:
+
+- replay determinism tests: stored artifacts replay identically without
+  re-querying a model.
+- provenance tests: proofing prompt, model identity, and config are
+  persisted and retrievable.
+- attribution tests: every LLM-generated finding records its LLM origin.
+- no-silent-mutation tests: original_text is unchanged by the LLM layer.
+
+## 14. Future LLM-Assisted Proofing Layer
+
+This section documents direction only. It positions LLM-assisted
+proofing after the deterministic rule-engine phases.
+
+- Deterministic proofing rules remain the primary governance substrate.
+  The LLM-assisted layer is additive, not authoritative.
+- LLM-generated findings are advisory. They carry the same severity
+  taxonomy as deterministic findings but no extra authority.
+- LLM-generated normalization suggestions are record-only until
+  explicitly reviewed. They never apply automatically.
+- Proofing replay must preserve, for every LLM-assisted run:
+  - the proofing prompt snapshot,
+  - model, provider, and model version,
+  - the run config and a config hash,
+  - the semantic contract version,
+  - the proofing rule version,
+  - the generated findings.
+
+Explicit prohibitions for the LLM-assisted layer:
+
+- no silent prompt rewriting,
+- no auto-approval,
+- no autonomous execution,
+- no hidden external actions,
+- no current-model replay: replay reads persisted artifacts and never
+  re-queries a live model.
+
+## 15. Phase Gates
 
 Gates are mandatory. A phase may not begin until the prior gate passes.
 
@@ -398,11 +482,15 @@ Gates are mandatory. A phase may not begin until the prior gate passes.
   and is tested (Phase 2 and Phase 3).
 - No execution artifact work (Phase 7) before ApprovedPrompt linkage
   exists (Phase 6).
-- No LLM calls, model clients, or external API calls in any phase of
-  this plan. Introducing them requires amending the product contract
-  first.
+- No LLM-assisted proofing (Phase 8) before the deterministic rule
+  engine (Phase 5) and Phases 1 to 7 have passed their audits.
+- Phases 1 to 7 contain no LLM calls, model clients, or external API
+  calls. Phase 8 is the only phase that may involve an LLM, and only
+  under the Future LLM-Assisted Proofing doctrine in the product
+  contract. Introducing LLM use earlier, or beyond that doctrine,
+  requires amending the contract first.
 
-## 15. Audit and Report Requirements
+## 16. Audit and Report Requirements
 
 Every implementation phase must:
 
@@ -416,7 +504,7 @@ Every implementation phase must:
 A phase is not complete until its report is written and its validation
 results are recorded.
 
-## 16. Open Questions
+## 17. Open Questions
 
 - Where should drafts persist: flat files, or a simple append-only log?
   Deferred to Phase 4; must remain dependency-free.
@@ -429,11 +517,11 @@ results are recorded.
 - Who assigns draft_id, and is it derived or random? Must stay
   deterministic if derived.
 
-## 17. Final Recommendation
+## 18. Final Recommendation
 
 Proceed with Phase 1 as the next implementation pass: enums and
 value-object models only, with the tests listed under Phase 1. It is the
 smallest governance-safe step, introduces no runtime behavior, and
 unblocks the later phases without committing to rule logic. Each
-subsequent phase is gated by section 14 and closed by a report under
-section 15.
+subsequent phase is gated by section 15 and closed by a report under
+section 16.

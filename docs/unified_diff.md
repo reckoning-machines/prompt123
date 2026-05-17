@@ -42,3 +42,12 @@ implemented in the initial scaffold.
 - 2026-05-17: First implementation plan recorded at
   docs/plans/prompt_draft_proofing_substrate_plan.md. Plan-only pass for
   the PromptDraft proofing substrate. No runtime behavior added.
+- 2026-05-17: Governance documentation pass. Added Future LLM-Assisted
+  Proofing doctrine to the product contract, a Future LLM-Assisted
+  Proofing Layer section and Phase 8 to the plan, and a README note. No
+  runtime behavior, no LLM calls added.
+- 2026-05-17: Added the determinism-without-erasing-intent framing to
+  the product contract and the plan, a determinism constraint on
+  LLM-assisted proofing, three rule categories (vague_intent,
+  missing_constraints, ambiguous_metric), and a PromptDraft success
+  criterion. Documentation only.
