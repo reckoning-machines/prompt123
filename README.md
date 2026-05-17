@@ -7,7 +7,8 @@ execution systems.
 
 prompt123 takes raw analyst prompt intent and helps produce governed
 `PromptDraft` artifacts. Those drafts can later be reviewed, approved,
-pinned, and executed by downstream systems such as fin123.
+pinned, and executed by any downstream execution system. fin123 is one
+possible consumer, but prompt123 is not tied to it.
 
 The doctrine is small and explicit:
 

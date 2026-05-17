@@ -39,3 +39,6 @@ implemented in the initial scaffold.
 - 2026-05-17: First standalone repository contract audit recorded at
   docs/audits/standalone_repo_contract_audit.md. Verdict: PASS WITH
   WARNINGS. Added docs/audits/ and docs/plans/.
+- 2026-05-17: First implementation plan recorded at
+  docs/plans/prompt_draft_proofing_substrate_plan.md. Plan-only pass for
+  the PromptDraft proofing substrate. No runtime behavior added.
