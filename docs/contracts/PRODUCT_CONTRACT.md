@@ -121,13 +121,39 @@ This section documents direction only. None of it is implemented here.
 
 This section documents direction only. None of it is implemented here.
 
-prompt123 may eventually use an LLM to assist proofing. The following
-doctrine governs that possibility in advance.
+Deterministic, rule-based proofing is foundational and remains valid on
+its own. It is, however, expected to be insufficient by itself for
+understanding vague, informal, or underspecified human intent.
+Deterministic rules can detect known patterns; they cannot reliably
+interpret intent that was never stated clearly. For that reason
+prompt123 is likely to require LLM-assisted proofing in the future. The
+following doctrine governs that direction in advance.
 
-- LLM-assisted proofing may propose findings, structural normalization,
-  or candidate draft language.
-- LLM-assisted proofing is advisory only. It produces proposals, never
-  decisions.
+Deterministic rule-based proofing remains foundational. LLM-assisted
+proofing is additive: it extends the deterministic substrate and never
+replaces it.
+
+LLM-assisted proofing may help to:
+
+- identify ambiguity in analyst intent,
+- suggest output schemas,
+- identify hidden assumptions and execution expectations,
+- propose normalized draft language,
+- suggest clarification questions.
+
+LLM-assisted proofing must not:
+
+- silently rewrite prompts,
+- approve prompts,
+- execute prompts,
+- resolve ambiguity silently,
+- invent missing constraints and present them as truth,
+- replace deterministic proofing rules.
+
+Governing rules:
+
+- LLM-assisted proofing is advisory, not authoritative. It produces
+  proposals, never decisions.
 - PromptDraft artifacts remain reviewable regardless of how their
   findings were produced.
 - Silent rewriting is forbidden. An LLM proposal never replaces the
@@ -139,28 +165,16 @@ doctrine governs that possibility in advance.
 - prompt123 does not gain execution authority by using LLM-assisted
   proofing.
 
-LLM-assisted proofing is allowed only to improve determinism and
-explainability. It may propose findings, clarification questions, or
-normalized draft language, but it must not silently resolve ambiguity,
-invent missing constraints, approve prompts, execute prompts, or replace
-deterministic proofing rules.
+Any future LLM-assisted proofing contribution must itself become
+replayable governance evidence. Each LLM-assisted run must persist, at
+least:
 
-Clarifications:
-
-- LLM-assisted proofing is a future, optional subsystem.
-- Deterministic, rule-based proofing remains fully valid on its own and
-  requires no LLM.
-- Any future LLM contribution must itself become replayable governance
-  evidence.
-
-A future LLM-assisted proofing pass must persist replay metadata,
-including at least:
-
-- model, provider, and model version
-- a snapshot of the proofing prompt used
-- a config hash for the proofing run
-- the semantic contract version
-- the proofing rule version
+- the proofing prompt snapshot,
+- the provider, model, and model version,
+- a config hash for the proofing run,
+- the semantic contract version,
+- the proofing rule version,
+- the generated findings.
 
 Replay reads this persisted metadata. It never re-queries a current
 model.

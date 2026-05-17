@@ -51,3 +51,9 @@ implemented in the initial scaffold.
   LLM-assisted proofing, three rule categories (vague_intent,
   missing_constraints, ambiguous_metric), and a PromptDraft success
   criterion. Documentation only.
+- 2026-05-17: Clarified that deterministic rules alone are insufficient
+  for vague intent and that prompt123 is likely to require LLM-assisted
+  proofing. Restructured the contract's Future LLM-Assisted Proofing
+  section into explicit may/must-not doctrine, strengthened the README
+  framing, and added an ambiguity-preservation test to Phase 8.
+  Documentation only.

@@ -443,11 +443,18 @@ Test requirements:
   persisted and retrievable.
 - attribution tests: every LLM-generated finding records its LLM origin.
 - no-silent-mutation tests: original_text is unchanged by the LLM layer.
+- ambiguity-preservation tests: unresolved ambiguity remains recorded as
+  findings and is never silently resolved by the LLM layer.
 
 ## 14. Future LLM-Assisted Proofing Layer
 
 This section documents direction only. It positions LLM-assisted
 proofing after the deterministic rule-engine phases.
+
+Deterministic rules detect known patterns but cannot reliably interpret
+vague, informal, or underspecified intent. prompt123 is therefore likely
+to require LLM-assisted proofing in the future. That layer is additive
+and is governed by the doctrine below.
 
 - Deterministic proofing rules remain the primary governance substrate.
   The LLM-assisted layer is additive, not authoritative.

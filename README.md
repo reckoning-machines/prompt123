@@ -39,11 +39,18 @@ APIs.
 
 ## Future LLM-assisted proofing
 
-prompt123 may later use an LLM to assist proofing. If it does, the LLM
-is advisory only: it proposes findings and normalization, never approves
-or executes anything, and every suggestion is recorded as reviewable,
-replayable governance evidence. Deterministic rule-based proofing
-remains valid without any LLM. See the product contract for the
+Deterministic rules alone cannot reliably interpret vague human intent,
+so prompt123 is likely to become LLM-assisted. prompt123 uses
+deterministic rules and future LLM-assisted proofing to turn vague
+analyst intent into reviewable governed prompt artifacts. The system may
+propose clarifications and normalized draft language, but approval and
+execution remain explicit downstream responsibilities.
+
+If an LLM is used, it remains a proofing assistant, not an execution
+authority. Every suggestion is advisory and is recorded as reviewable,
+replayable governance evidence. Deterministic rule-based proofing stays
+foundational and valid on its own. The purpose is governed determinism,
+not autonomous prompt generation. See the product contract for the
 governing doctrine.
 
 ## Canonical ontology
