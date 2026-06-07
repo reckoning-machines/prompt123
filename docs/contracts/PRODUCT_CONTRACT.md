@@ -117,57 +117,66 @@ This section documents direction only. None of it is implemented here.
 - prompt123 itself does not execute prompts, and this contract does not
   authorize it to.
 
-## Future LLM-Assisted Proofing
+## LLM-Assisted Proofing
 
-This section documents direction only. None of it is implemented here.
+The proofing layer uses two components in sequence: a deterministic
+pre-filter and an LLM proofer. They are not interchangeable. Each
+has a defined scope.
 
-Deterministic, rule-based proofing is foundational and remains valid on
-its own. It is, however, expected to be insufficient by itself for
-understanding vague, informal, or underspecified human intent.
-Deterministic rules can detect known patterns; they cannot reliably
-interpret intent that was never stated clearly. For that reason
-prompt123 is likely to require LLM-assisted proofing in the future. The
-following doctrine governs that direction in advance.
+### Deterministic Pre-Filter
 
-Deterministic rule-based proofing remains foundational. LLM-assisted
-proofing is additive: it extends the deterministic substrate and never
-replaces it.
+The deterministic pre-filter runs first on every input. It handles
+basic, pattern-matchable checks that do not require language
+understanding: profanity, disallowed content, formatting violations,
+and other simple rules. It is fast, cheap, and requires no model call.
+Findings from the pre-filter carry ProofingSource.deterministic.
 
-LLM-assisted proofing may help to:
+The pre-filter is foundational. It runs regardless of domain_profile
+and cannot be disabled.
 
-- identify ambiguity in analyst intent,
-- suggest output schemas,
-- identify hidden assumptions and execution expectations,
-- propose normalized draft language,
-- suggest clarification questions.
+### LLM Proofer
 
-LLM-assisted proofing must not:
+The LLM proofer runs after the pre-filter. It is the primary proofing
+engine for everything the pre-filter does not cover: ambiguity,
+missing schema, hidden assumptions, nondeterministic wording, domain-
+specific issues, and intent that requires language understanding to
+evaluate. Findings from the LLM proofer carry ProofingSource.llm.
 
-- silently rewrite prompts,
-- approve prompts,
-- execute prompts,
-- resolve ambiguity silently,
-- invent missing constraints and present them as truth,
-- replace deterministic proofing rules.
+The LLM proofer is scoped to the declared domain_profile of the input.
+Each domain_profile has its own proofing prompt. The proofing prompt
+instructs the LLM what to flag and how to structure its output.
 
-Governing rules:
+### Domain Profiles
 
-- LLM-assisted proofing is advisory, not authoritative. It produces
-  proposals, never decisions.
-- PromptDraft artifacts remain reviewable regardless of how their
-  findings were produced.
+prompt123 supports domain profiles as a mechanism for scoping the LLM
+proofing prompt to a specific field. A domain_profile declaration on
+a PromptIntent selects the matching proofing prompt for that domain.
+
+Two profiles are authorized: generic and fin123. generic covers all
+inputs regardless of domain. fin123 extends generic with finance-
+specific proofing categories. Additional profiles require a contract
+amendment.
+
+### Governing Rules
+
+These rules apply to the LLM proofer and are binding:
+
+- The LLM proofer is authorized to make runtime model calls within
+  the governed proofing layer only. No other component of prompt123
+  may make model calls.
+- LLM output is proposals and findings only. It is never a decision.
 - Silent rewriting is forbidden. An LLM proposal never replaces the
   original intent text without a recorded, reviewable finding.
 - Proofing suggestions must be explainable and attributable. Every
-  suggestion records what it proposes, why, and that an LLM produced it.
-- ApprovedPrompt artifacts still require explicit approval by downstream
-  systems. LLM-assisted proofing does not approve anything.
-- prompt123 does not gain execution authority by using LLM-assisted
-  proofing.
+  finding records what it observed, why it matters, and that an LLM
+  produced it.
+- ApprovedPrompt artifacts still require explicit approval by
+  downstream systems. The LLM proofer does not approve anything.
+- prompt123 does not gain execution authority by using the LLM proofer.
+- PromptDraft artifacts remain reviewable regardless of how their
+  findings were produced.
 
-Any future LLM-assisted proofing contribution must itself become
-replayable governance evidence. Each LLM-assisted run must persist, at
-least:
+Each LLM-assisted run must persist, at minimum:
 
 - the proofing prompt snapshot,
 - the provider, model, and model version,
@@ -183,12 +192,14 @@ model.
 
 The initial repository deliberately excludes:
 
-- runtime LLM calls
-- external API calls
+- external API calls outside the governed LLM proofing layer
 - agent behavior
 - embeddings or vector databases
 - a web UI
 - fin123 integration
 
-These exclusions are part of the contract, not a temporary state. Any
-proposal to add them must update this document first.
+Runtime LLM calls are authorized within the governed LLM proofing
+layer only, under the constraints in the LLM-Assisted Proofing
+section above. All other exclusions are part of the contract, not a
+temporary state. Any proposal to add them must update this document
+first.
