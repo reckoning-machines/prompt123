@@ -6,12 +6,20 @@ Code and design decisions defer to this contract.
 
 ## Product Thesis
 
-prompt123 is a governed prompt proofing layer for institutional LLM
-execution systems.
+prompt123 is a governed prompt proofing and optimization system.
 
-It helps transform raw analyst intent into reviewable `PromptDraft`
-artifacts. It exists so that prompts entering an execution system are
-structured, explained, and traceable before anyone approves them.
+It helps domain experts create better AI prompts without requiring
+expertise in prompt engineering.
+
+prompt123 transforms raw user intent into proofing findings and
+reviewable `PromptDraft` artifacts by identifying defects, ambiguity,
+missing constraints, hidden assumptions, and opportunities for
+improvement.
+
+A successful proofing result improves the likelihood of producing the
+user's intended outcome while preserving the user's intent.
+
+prompt123 produces artifacts. It does not execute them.
 
 prompt123 is NOT:
 
@@ -21,9 +29,91 @@ prompt123 is NOT:
 - a workflow runtime
 - a model orchestration system
 - a memory system
+- a prompt-generation system
 - a fin123 replacement
 
-prompt123 produces artifacts. It does not run them.
+Users remain the source of intent. prompt123 critiques, explains, and
+improves prompts; it does not replace the author's intent with its own.
+
+## Question and Method Doctrine
+
+Most users are not trying to author prompts. They are trying to:
+
+- ask a Question
+- optionally provide a Method
+
+Definitions:
+
+- Question: what should be produced.
+- Method: how reasoning should occur.
+
+Question and Method may exist independently.
+
+Method remains optional.
+
+Question and Method are conceptual components of `PromptIntent`, not
+separate canonical artifacts in prompt123. A `PromptIntent` may contain
+a Question, a Method, or both.
+
+prompt123 helps transform Questions and optional Methods into
+reviewable `PromptDraft` artifacts.
+
+prompt123 does not require Methods. Many valid prompts consist only of
+a Question.
+
+## Optimization Doctrine
+
+Optimization means improving prompt quality while preserving the
+author's intended objective.
+
+Optimization may include:
+
+- stronger output specifications,
+- clearer instructions,
+- reduced ambiguity,
+- improved determinism,
+- better prompt structure,
+- improved model comprehension.
+
+Optimization must not alter the author's intended objective.
+
+## Findings Doctrine
+
+Findings are the primary output of prompt123.
+
+prompt123 returns:
+
+- Findings
+- Suggested Improvements
+- Suggested PromptDrafts
+
+while preserving the original intent.
+
+A finding explains:
+
+- what was observed,
+- why it matters,
+- how it may affect prompt quality,
+- and, when appropriate, how it may be improved.
+
+Findings may identify:
+
+- ambiguity,
+- missing constraints,
+- missing output specifications,
+- hidden assumptions,
+- prompt-engineering weaknesses,
+- optimization opportunities,
+- mixing of Question and Method responsibilities.
+
+Findings are advisory. They do not modify intent. They do not approve
+prompts.
+
+Optimization findings identify improvements that may make a prompt more
+effective without changing the author's intended objective. For
+example, an optimization finding may suggest an explicit output schema,
+clearer instruction order, stronger constraints, or wording that is
+easier for a model to interpret.
 
 ## Purpose: Determinism Without Erasing Intent
 
@@ -31,12 +121,17 @@ prompt123 exists to make LLM prompts as deterministic as possible
 without erasing user intent.
 
 Users may express vague, incomplete, or informal intent. prompt123
-transforms that intent into a reviewable governed PromptDraft by
-identifying ambiguity, missing schema, hidden assumptions,
-nondeterministic wording, and unsafe external dependencies.
+transforms that intent into findings and a reviewable governed
+PromptDraft by identifying ambiguity, missing schema, hidden
+assumptions, nondeterministic wording, and unsafe external dependencies.
 
 The goal is not to make prompts more clever. The goal is to make
 prompts more deterministic, explainable, reviewable, and replay-safe.
+The goal is not to teach users prompt engineering. The goal is to help
+users obtain better AI outputs while preserving their intent.
+
+prompt123 identifies defects and opportunities for improvement so
+users can focus on domain expertise rather than prompt construction.
 
 Doctrine:
 
@@ -68,7 +163,8 @@ Definitions:
   complete, or safe.
 - `PromptDraft` is a structured, governed candidate prompt derived from a
   `PromptIntent`. It is advisory. It carries the proofing context that
-  explains how it was shaped.
+  explains how it was shaped. A suggested `PromptDraft` is a proposal
+  for review, not a statement of correctness.
 - `ApprovedPrompt` is a pinned, reviewed execution prompt. Approval is an
   explicit human or system act. An `ApprovedPrompt` references the
   `PromptDraft` it came from.
@@ -104,6 +200,10 @@ These rules are binding.
   version identity must be computed deterministically.
 - Prompt proofing must be explainable. Every transformation from intent
   to draft must carry a human-readable account of what changed and why.
+- prompt123 must distinguish between what should be produced and how
+  reasoning should occur. When these concepts are mixed, prompt123 may
+  surface findings and suggest improvements, but it must not silently
+  separate or rewrite them.
 
 ## Future Integration Direction
 
@@ -138,7 +238,11 @@ LLM-assisted proofing may help to:
 - identify ambiguity in analyst intent,
 - suggest output schemas,
 - identify hidden assumptions and execution expectations,
+- identify prompt-engineering weaknesses,
+- suggest improved prompt structure,
+- suggest stronger output specifications,
 - propose normalized draft language,
+- propose optimized wording while preserving intent,
 - suggest clarification questions.
 
 LLM-assisted proofing must not:
